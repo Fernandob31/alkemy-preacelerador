@@ -31,7 +31,7 @@ public class PeliculaRest {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<PeliculaDto> actualizarPersonaje(@RequestParam("id") int id,
+	public ResponseEntity<PeliculaDto> actualizarPelicula(@RequestParam("id") int id,
 			@RequestBody PeliculaDto pelicula){
 		if(peliculaService.actualizarPelicula(pelicula,id)) {
 			return ResponseEntity.status(HttpStatus.OK).build();
