@@ -14,17 +14,23 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Pelicula {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	@Column
+	private String imagen;
 	@Column
 	private String titulo;
 	@Column
@@ -32,13 +38,13 @@ public class Pelicula {
 	@Column
 	private int calificacion;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "pelicula_personaje",
 	joinColumns = @JoinColumn(name="pelicula_id"),
 	inverseJoinColumns = @JoinColumn(name="personaje_id"))
 	private List<Personaje> personajes;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name="genero_id", nullable=false)
 	private Genero genero;
 

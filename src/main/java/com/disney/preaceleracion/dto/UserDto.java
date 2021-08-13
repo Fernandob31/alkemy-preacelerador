@@ -1,5 +1,7 @@
 package com.disney.preaceleracion.dto;
 
+import com.disney.preaceleracion.model.User;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +17,14 @@ public class UserDto {
 	
 	private String userpass;
 	
-	private String token;
+	private String email;
+	
+	public User buildEntity() {
+		return User.builder()
+				.username(this.username)
+				.userPass(this.userpass)
+				.userEmail(this.email)
+				.build();
+	}
+	
 }

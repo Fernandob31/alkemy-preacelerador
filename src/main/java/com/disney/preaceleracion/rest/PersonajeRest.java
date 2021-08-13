@@ -1,9 +1,7 @@
 package com.disney.preaceleracion.rest;
 
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.disney.preaceleracion.dto.PersonajeDto;
 import com.disney.preaceleracion.service.PersonajeService;
 
@@ -26,40 +25,38 @@ public class PersonajeRest {
 	
 	@Autowired
 	PersonajeService personajeService;
-	/*
+	
 	@GetMapping
 	public ResponseEntity<List<PersonajeDto>> listarPersonajes(
-			@RequestParam(value="name", required = false) Optional<String> nombre,
-			@RequestParam(value="edad", required = false) Optional<String> edad,
-			@RequestParam(value="idMovie", required = false) Optional<String> idMovie			
-			){
-		Map<String, String> queryParam = buildQuerymap(nombre,edad,idMovie);
-		List<PersonajeDto> resp = personajeService.buscarPersonaje(queryParam);
-		return ResponseEntity.ok().body(resp);
-	}*/
+			@RequestParam(value = "name", required = false) String nombre,
+			@RequestParam(value = "age", required = false) String edad,
+			@RequestParam(value = "movies", required = false) String idmovie) {
+		if (nombre == null && edad == null && idmovie == null) {
+			return ResponseEntity.ok(personajeService.listarPersonajes());
+		}else {
+			return ResponseEntity.ok(personajeService.listarPersonajesPorParams(nombre, edad, idmovie));
+		}
+	}
 
 	@PostMapping
-	public ResponseEntity<PersonajeDto> crearPersonaje(@RequestBody PersonajeDto personaje){
-		if(personajeService.crearPersonje(personaje)) {
-			return ResponseEntity.status(HttpStatus.CREATED).body(personaje);
-		}
-		return ResponseEntity.status(404).body(personaje);
+	public ResponseEntity<?> crearPersonaje(@RequestBody PersonajeDto personaje){
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(personajeService.crearPersonje(personaje));
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<PersonajeDto> actualizarPersonaje(@RequestParam("id") int id,
+	public ResponseEntity<?> actualizarPersonaje(@RequestParam("id") int id,
 			@RequestBody PersonajeDto personaje){
 		if(personajeService.actualizarPersonaje(personaje,id)) {
-			return ResponseEntity.status(HttpStatus.OK).body(personaje);
+			return ResponseEntity.status(HttpStatus.OK).body("Personaje Actualizado: \n" + personaje);
 		}
-		return ResponseEntity.status(404).body(personaje);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: ID no encontrada o Error Interno");
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<PersonajeDto> borrarPersonaje(@RequestParam("id") int id){
+	public ResponseEntity<?> borrarPersonaje(@RequestParam("id") int id){
 		if(personajeService.borrarPersonaje(id)) {
-			return ResponseEntity.status(HttpStatus.OK).build();
+			return ResponseEntity.status(HttpStatus.OK).body("Personaje Eliminado");
 		}
-		return ResponseEntity.status(404).build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: ID no encontrada o Error Interno");
 	}
 }

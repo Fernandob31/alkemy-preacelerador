@@ -1,53 +1,45 @@
 package com.disney.preaceleracion.rest;
 
-import java.sql.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.IOException;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.disney.preaceleracion.dto.Credencial;
 import com.disney.preaceleracion.dto.UserDto;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.disney.preaceleracion.service.UserService;
 
 @RestController
 @RequestMapping("auth")
 public class UserController {
-
+	
+	@Autowired
+	UserService userService;
+	
 	@PostMapping("/login")
-	public UserDto login(@RequestParam("user") String username, @RequestParam("password") String pwd) {
-		
-		String token = getJWTToken(username);
-		UserDto user = new UserDto();
-		user.setUsername(username);
-		user.setToken(token);		
-		return user;
-		
+	public String login(@RequestBody Credencial credencial) {
+		try {
+			return userService.iniciarSesion(credencial);
+		}catch(NullPointerException ex){
+			return "Datos Invalidos";
+		}
 	}
-
-	private String getJWTToken(String username) {
-		String secretKey = "mySecretKey";
-		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER");
-		
-		String token = Jwts
-				.builder()
-				.setId("softtekJWT")
-				.setSubject(username)
-				.claim("authorities",
-						grantedAuthorities.stream()
-								.map(GrantedAuthority::getAuthority)
-								.collect(Collectors.toList()))
-				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 600000))
-				.signWith(SignatureAlgorithm.HS512,
-						secretKey.getBytes()).compact();
-
-		return "Bearer " + token;
+	
+	@PostMapping("/register")
+	public ResponseEntity<?> signIn(@RequestBody UserDto usuario) {
+		try {
+			if (userService.registrarUsuario(usuario)) {
+				return ResponseEntity.status(HttpStatus.ACCEPTED).body("Datos registrados con exito");
+			}else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Usuario no registrado. Faltan Datos");
+			}
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Error Interno");
+		}
 	}
 }
