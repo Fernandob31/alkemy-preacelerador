@@ -42,7 +42,7 @@ public class UserService {
 		if (!user.getUsername().isEmpty() && !user.getUserpass().isEmpty() && !user.getEmail().isEmpty()) {
 			User usuario = user.buildEntity();
 			userRepository.save(usuario);
-			mailService.sendRegisterEmail(user);		//Envio de Email
+			//mailService.sendRegisterEmail(user);		//Envio de Email utilizando SendGrid
 			return true;
 		}
 		return false;

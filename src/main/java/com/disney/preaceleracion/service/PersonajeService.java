@@ -39,7 +39,7 @@ public class PersonajeService {
 		if(verificarDatosPersonaje(personajeDto)) {
 			Personaje personaje = personajeDto.buildEntidad();
 			repository.saveAndFlush(personaje);
-			return "Pelicula Agregada con exito";
+			return "Personaje agregado con exito";
 		}else {
 			return "Error: Datos Incompletos";
 		}
